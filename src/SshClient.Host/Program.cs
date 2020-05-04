@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SshClient.Host.Infrastructure;
@@ -19,7 +18,7 @@ namespace SshClient.Host
 		/// <summary>
 		/// Base path.
 		/// </summary>
-		private static string BasePath => Directory.GetParent(AppContext.BaseDirectory).FullName;
+		private static string BasePath => AppContext.BaseDirectory;
 		/// <summary>
 		/// Entry point.
 		/// </summary>
