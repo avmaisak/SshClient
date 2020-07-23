@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Renci.SshNet;
 using SshClient.Host.Infrastructure;
@@ -20,6 +19,8 @@ namespace SshClient.Host.Services
 		{
 			var connectionModel = _cfg.GetSection("connection").Get<ConnectionModel>();
 			if (connectionModel == null) throw new SshClientException(Resources.ConnectionCfgNotSpecified);
+
+			Console.WriteLine($@"Using Connection: {connectionModel.Host}:{connectionModel.Port}");
 
 			var authMethod = new PasswordAuthenticationMethod(connectionModel.UserName, connectionModel.Password);
 			_connectionInfo = new ConnectionInfo(connectionModel.Host, connectionModel.Port, connectionModel.UserName, authMethod);
@@ -52,11 +53,15 @@ namespace SshClient.Host.Services
 				var host = cfgArray[0];
 				var port = Convert.ToUInt32(cfgArray[1]);
 
+				if (string.IsNullOrWhiteSpace(host)) continue;
+
+				Console.WriteLine($@"Forward: {host}: {port}");
+
 				var forwardPort = new ForwardedPortLocal(host, port, host, port);
 
 				_client.AddForwardedPort(forwardPort);
 
-				forwardPort.Start();
+				if(!forwardPort.IsStarted) forwardPort.Start();
 			}
 		}
 
@@ -68,16 +73,19 @@ namespace SshClient.Host.Services
 			InitClient();
 		}
 
-		public async Task StartServiceAsync()
+		public void StartService()
 		{
+			using (_client)
+			{
+				if (!_client.IsConnected) _client.Connect();
 
-			using (_client) {
-				await Task.Run(() => _client.Connect());
+				Console.WriteLine(_client.ConnectionInfo.ClientVersion);
+
 				InitPortWorwarding();
+				Console.WriteLine(@"Press any key to shutdown...");
 				Console.ReadKey();
 				_client.Disconnect();
 			}
-
 		}
 	}
 }

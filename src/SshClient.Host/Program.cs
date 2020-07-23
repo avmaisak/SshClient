@@ -16,20 +16,18 @@ namespace SshClient.Host
 		/// </summary>
 		private static IServiceProvider _serviceProvider;
 		/// <summary>
-		/// Base path.
-		/// </summary>
-		private static string BasePath => AppContext.BaseDirectory;
-		/// <summary>
 		/// Entry point.
 		/// </summary>
 		/// <returns></returns>
 		private static async Task Main()
 		{
-			_serviceProvider = ServiceConfiguration.ConfigureServices(new ServiceCollection(), BasePath).BuildServiceProvider();
+			_serviceProvider = ServiceConfiguration.ConfigureServices(new ServiceCollection(), Environment.CurrentDirectory).BuildServiceProvider();
 
-			var sshService = _serviceProvider.GetService<SshPortForwardingService>();
-
-			await sshService.StartServiceAsync();
+			await Task.Run(() => 
+					_serviceProvider.
+						GetService<SshPortForwardingService>()
+						.StartService()
+			);
 		}
 	}
 }
