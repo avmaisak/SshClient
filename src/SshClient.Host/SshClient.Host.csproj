@@ -13,11 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
+    <None Remove="appsettings.example.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.json">
+    <Content Include="appsettings.example.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
